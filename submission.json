@@ -1,0 +1,18 @@
+{
+  "name": "Quarters",
+  "description": "A pay-per-use AI tool companion with a NEAR Coin Jar for mock-USDC purchases. The Phase 1 contract meters spending, credits approved providers, and emits a receipt for each purchase.",
+  "problem": "People who use premium AI tools occasionally still face recurring subscriptions. Agents need a way to pay for individual results while operating inside a user's spending policy.",
+  "links": {
+    "live": [],
+    "contracts": []
+  },
+  "userFlow": [
+    "Run npm run test:contract from the repository root with Node.js 20 or later. See the dependency-free Phase 1 contract harness run.",
+    "Follow the faucet and dispense tests. See a $5.00 mock-USDC grant, a $0.05 purchase, a provider credit, and a single receipt even when the request is retried.",
+    "Follow the guardrail tests. See an unregistered provider, a $10.00 payment attempt, and a purchase above the rolling $2.00 cap rejected."
+  ],
+  "media": {
+    "videos": [],
+    "screenshots": []
+  }
+}

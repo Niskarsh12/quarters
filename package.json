@@ -1,0 +1,14 @@
+{
+  "name": "quarters",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build:contract": "near-sdk-js build contracts/vending_jar/src/contract.ts build/vending_jar.wasm",
+    "test:contract": "node --test contracts/vending_jar/test/contract.test.js"
+  },
+  "devDependencies": {
+    "near-sdk-js": "2.0.0"
+  }
+}
