@@ -1,16 +1,17 @@
 {
   "name": "Quarters",
-  "description": "A pay-per-use AI tool companion with a NEAR Coin Jar for mock-USDC purchases. An MCP service negotiates HTTP 402 paywalls for research and chart tools, while the jar meters spending and credits approved providers.",
+  "description": "A pay-per-use AI workbench with a NEAR Coin Jar for mock-USDC purchases. Buy research or charts through an MCP and HTTP 402 payment flow, view receipts, and try a prompt-injection attack against the jar's spending policy. The browser includes an instant demo mode.",
   "problem": "People who use premium AI tools occasionally still face recurring subscriptions. Agents need a way to pay for individual results while operating inside a user's spending policy.",
   "links": {
     "live": [],
     "contracts": []
   },
   "userFlow": [
-    "Run npm run test:contract from the repository root with Node.js 20 or later. See the dependency-free contract harness run.",
-    "Follow the faucet and dispense tests. See a $5.00 mock-USDC grant, a $0.05 purchase, a provider credit, and a single receipt even when the request is retried.",
-    "Follow the guardrail tests. See an unregistered provider, a $10.00 payment attempt, and a purchase above the rolling $2.00 cap rejected.",
-    "Run npm ci --omit=dev and npm run test:vending. See both MCP tools negotiate a local HTTP 402 paywall, report optimistic payment, and return results after simulated settlement."
+    "Run npm ci --omit=dev and npm run dev with Node.js 20 or later, then open the printed local URL. See Instant Demo Mode and a $5.00 Coin Jar.",
+    "Click the report and chart prompts. See both results, a $4.92 balance, and two clickable mock receipts.",
+    "Click Drop 1 Quarter. See the one-time grant raise the balance to $9.92.",
+    "Click Simulate Prompt Injection. See the simulated $10.00 drain blocked by the contract's per-call cap.",
+    "Run npm run test:security and npm run test:vending. See the attack harness pass and both MCP tools complete the HTTP 402 payment loop."
   ],
   "media": {
     "videos": [],

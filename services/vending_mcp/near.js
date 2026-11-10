@@ -32,7 +32,7 @@ export async function connectTestnet(rpcUrl, fetcher = fetch) {
   return rpc;
 }
 
-export function createNearPayer({ rpc, accountId, contractId, secretKey }) {
+function createScopedCaller({ rpc, accountId, contractId, secretKey }, methodName) {
   if (!isAccount(accountId) || !isAccount(contractId)) throw new Error("Invalid payer or contract account");
   let key;
   try {
@@ -44,26 +44,26 @@ export function createNearPayer({ rpc, accountId, contractId, secretKey }) {
   let lastNonce = 0n;
   let queue = Promise.resolve();
 
-  async function signAndSubmit(terms) {
+  async function checkScope() {
     const accessKey = await rpc("query", {
       request_type: "view_access_key", finality: "optimistic",
       account_id: accountId, public_key: publicKey.toString(),
     });
     const scope = accessKey.permission?.FunctionCall;
     if (scope?.receiver_id !== contractId || scope.method_names?.length !== 1
-      || scope.method_names[0] !== "dispense" || !/^[1-9]\d*$/.test(scope.allowance ?? "")) {
-      throw new Error("Agent key must allow only dispense on the jar, with a finite gas allowance");
+      || scope.method_names[0] !== methodName || !/^[1-9]\d*$/.test(scope.allowance ?? "")) {
+      throw new Error(`Agent key must allow only ${methodName} on the jar, with a finite gas allowance`);
     }
+    return accessKey;
+  }
+
+  async function signAndSubmit(args) {
+    const accessKey = await checkScope();
     if (!Number.isSafeInteger(accessKey.nonce)) throw new Error("Invalid NEAR access key nonce");
     const chainNonce = BigInt(accessKey.nonce);
     const nonce = (lastNonce > chainNonce ? lastNonce : chainNonce) + 1n;
     const transaction = createTransaction(accountId, publicKey, contractId, nonce, [
-      actionCreators.functionCall("dispense", {
-        provider_id: terms.payTo,
-        amount: terms.amount,
-        tool_id: terms.extra.toolId,
-        request_id: terms.extra.challengeId,
-      }, DISPENSE_GAS, 0n),
+      actionCreators.functionCall(methodName, args, DISPENSE_GAS, 0n),
     ], bs58.decode(accessKey.block_hash));
     const digest = createHash("sha256").update(transaction.encode()).digest();
     const signature = new Signature({ keyType: publicKey.keyType, data: key.sign(digest).signature });
@@ -75,7 +75,7 @@ export function createNearPayer({ rpc, accountId, contractId, secretKey }) {
         signed_tx_base64: Buffer.from(signed.encode()).toString("base64"), wait_until: "INCLUDED",
       });
     } catch (error) {
-      if (error.rpcCause === "INVALID_TRANSACTION") throw new Error("NEAR rejected the signed dispense");
+      if (error.rpcCause === "INVALID_TRANSACTION") throw new Error(`NEAR rejected the signed ${methodName}`);
       // The node may have received the signed transaction before losing the connection.
       // Return its deterministic hash so the provider can look it up without charging again.
     }
@@ -83,11 +83,29 @@ export function createNearPayer({ rpc, accountId, contractId, secretKey }) {
     return proof;
   }
 
-  return function pay(terms) {
-    const result = queue.then(() => signAndSubmit(terms));
+  function submit(args) {
+    const result = queue.then(() => signAndSubmit(args));
     queue = result.catch(() => {});
     return result;
-  };
+  }
+  return { submit, checkScope };
+}
+
+export function createNearPayer(config) {
+  const { submit, checkScope } = createScopedCaller(config, "dispense");
+  const pay = (terms) => submit({
+    provider_id: terms.payTo,
+    amount: terms.amount,
+    tool_id: terms.extra.toolId,
+    request_id: terms.extra.challengeId,
+  });
+  pay.checkScope = checkScope;
+  return pay;
+}
+
+export function createNearFaucet(config) {
+  const { submit } = createScopedCaller(config, "faucet");
+  return () => submit({});
 }
 
 export function createNearVerifier({ rpc, contractId }) {

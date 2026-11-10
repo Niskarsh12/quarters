@@ -14,7 +14,7 @@ function renderChart({ data }) {
   return {
     kind: "chart",
     mimeType: "image/svg+xml",
-    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 ${data.length * 32 + 20}" font-family="sans-serif" font-size="12" fill="#5746ce">${bars}</svg>`,
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 ${data.length * 32 + 20}" font-family="sans-serif" font-size="12" fill="#d2a362">${bars}</svg>`,
   };
 }
 
