@@ -42,6 +42,8 @@ Prices are integer micro-units. The owner sets a ceiling per provider and tool p
 
 On Linux or macOS, run `npm ci` and `npm run build:contract` to produce `build/vending_jar.wasm`. The NEAR JavaScript SDK installs its build toolchain as part of `npm ci`. The local harness requires only Node.js.
 
+On Windows, open the [Build Vending Jar workflow](https://github.com/Niskarsh12/quarters/actions/workflows/build-vending-jar.yml), select **Run workflow** on `main`, and open the successful run. Download **vending-jar-wasm** from **Artifacts**, then extract `vending_jar.wasm`. You can deploy the extracted file using the Windows NEAR CLI. The workflow only builds and verifies the contract and needs no wallet credentials.
+
 For a Testnet deployment, use the contract account to deploy and call `init` with `{"owner_id":"YOUR_OWNER_ACCOUNT"}`. Use the owner account to register each provider and tool pair. For example, set a `price_ceiling` of `"50000"` for research and `"30000"` for chart rendering. Use the user's wallet to call `faucet` before an agent purchase.
 
 Create the agent's key on the user's Testnet account with the contract as its receiver, `dispense` as its sole allowed method, and a finite gas allowance. The user's wallet keeps its own key. NEAR rejects native transfer actions and attached deposits signed by the scoped key. The contract separately enforces the purchase policy after NEAR accepts a function call. The local harness verifies the purchase rules against in-memory storage. Demonstrating key rejection requires an actual NEAR runtime. See [NEAR access keys](https://docs.near.org/protocol/accounts-contracts/access-keys).

@@ -1,0 +1,49 @@
+name: Build Vending Jar
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-vending-jar.yml"
+      - "contracts/vending_jar/**"
+      - "package.json"
+      - "package-lock.json"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run test:contract
+      - run: npm run build:contract
+      - name: Verify contract exports
+        run: |
+          node --input-type=module <<'EOF'
+          import assert from "node:assert/strict";
+          import { readFileSync } from "node:fs";
+          const module = new WebAssembly.Module(readFileSync("build/vending_jar.wasm"));
+          const functions = new Set(WebAssembly.Module.exports(module)
+            .filter(({ kind }) => kind === "function")
+            .map(({ name }) => name));
+          for (const name of ["init", "faucet", "deposit", "register_provider", "dispense",
+            "get_user_account", "get_provider_balance"]) {
+            assert(functions.has(name), `Missing WASM export: ${name}`);
+          }
+          EOF
+      - uses: actions/upload-artifact@v7
+        with:
+          name: vending-jar-wasm
+          path: build/vending_jar.wasm
+          if-no-files-found: error
