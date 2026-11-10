@@ -3,15 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build:contract": "near-sdk-js build contracts/vending_jar/src/contract.ts build/vending_jar.wasm",
-    "test:contract": "node --test contracts/vending_jar/test/contract.test.js"
+    "test:contract": "node --test contracts/vending_jar/test/contract.test.js",
+    "test:vending": "node --test services/vending_mcp/vending.test.js",
+    "start:vending": "node services/vending_mcp/index.js"
   },
   "devDependencies": {
     "near-sdk-js": "2.0.0"
   },
   "overrides": {
     "@types/node": "18.19.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "@near-js/crypto": "2.5.1",
+    "@near-js/transactions": "2.5.1",
+    "bs58": "6.0.0",
+    "zod": "3.25.76"
   }
 }
