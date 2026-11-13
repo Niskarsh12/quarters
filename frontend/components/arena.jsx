@@ -154,11 +154,11 @@ export function ArenaScreen({ arena, account, credit = "0", now, fast = false, a
             ))}
           </section>
           <section className="panel"><h2>Floor log</h2>
-            {[...arena.events].reverse().filter(event => event.type !== "entered").slice(0, 4).map((event, index) =>
+            {[...arena.events].reverse().filter(event => !["entered", "held"].includes(event.type)).slice(0, 4).map((event, index) =>
               <div className="event" key={index}><span>{event.type === "round" ? `Round ${event.round} opened` : `${event.account === account ? "You" : event.account} ${labels[event.type]}`}</span>
                 {["fled", "timed_out"].includes(event.type) && <span className="mono danger">+{display(event.amount)}</span>}</div>
             )}
-            {!arena.events.some(event => event.type !== "entered") && <p className="rules">The first broadcast is still pending.</p>}
+            {!arena.round && <p className="rules">The first broadcast is still pending.</p>}
           </section>
           <section className="panel"><h2>Rules of the floor</h2><p className="rules">Flee and lose 25% of your current stake. Miss the deadline and lose 50% to players who locked Hold. If nobody locks Hold, remaining stakes are returned. The last player or round-three survivors take their full balances.</p></section>
         </aside>
