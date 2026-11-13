@@ -1,13 +1,19 @@
 {
   "name": "The PaperHands Arena",
-  "description": "A three-round browser survival game with AI-generated pressure broadcasts and a NEAR Testnet stake vault. Players who flee give up a portion of their balance, which goes directly to the players still inside.",
+  "description": "A three-round browser survival game. In practice, solve circuit puzzles that NEAR AI Cloud can generate, predict the crowd in a train game, or flee and give up part of your play stake. A NEAR Testnet vault implements the original Hold/Flee rules.",
   "problem": "Social survival games often give players no meaningful choice when they walk away. This arena makes each exit change the other players' positions through a fixed, verifiable redistribution rule.",
-  "links": { "live": [], "contracts": [] },
+  "links": {
+    "live": [],
+    "contracts": []
+  },
   "userFlow": [
     "Run npm ci --omit=dev and npm run dev with Node.js 22. Open the local URL to see the practice lobby.",
-    "With Fast-forward enabled, click Enter, Hold position, and Advance round. See a simulated player flee and the remaining balances rise.",
-    "Keep holding and advancing to settle, or reset and confirm Flee to see your refund and tax.",
+    "With Fast-forward enabled, click Enter. Solve the circuit clues, toggle switches, and lock in to reveal the answer.",
+    "Choose a train, reveal where the other players boarded, and continue to the final circuit. Flee before locking in to preview the tax.",
     "Run npm run test:arena to check conservation, round deadlines, and payout behavior."
   ],
-  "media": { "videos": [], "screenshots": [] }
+  "media": {
+    "videos": [],
+    "screenshots": []
+  }
 }

@@ -70,3 +70,23 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   .broadcast { padding: 15px; }
 }
 @media (prefers-reduced-motion: reduce) { button { transition: none; } }
+
+.scene.scene-compact { height: clamp(100px, 13vw, 160px); }
+.clue-list { margin: 12px 0; padding: 0; list-style: none; display: grid; gap: 5px; font-size: 13px; }
+.clue-value { display: inline-block; min-width: 18px; color: var(--orange); }
+.room-options { display: grid; gap: 8px; margin: 12px 0; }
+.circuit-options { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.train-options { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.room-option { display: grid; justify-items: start; gap: 3px; min-height: 68px; padding: 9px 11px; border: 1px solid var(--line); text-align: left; }
+.room-option:hover:not(:disabled) { background: #2d2b26; }
+.room-option[aria-pressed=true] { background: #36281f; border-color: var(--orange); }
+.room-option svg { color: var(--orange); }
+.room-option strong { font-size: 14px; }
+.room-option small { color: var(--muted); font-size: 11px; }
+.room-option:disabled { opacity: .8; }
+.room-submit { display: inline-flex; align-items: center; gap: 10px; }
+.opponent-reads { margin-top: 10px; font-size: 13px; color: var(--muted); }
+.opponent-reads summary { cursor: pointer; }
+.opponent-reads ul { margin: 5px 0 0; padding-left: 17px; }
+.room-result { margin-top: 12px; padding: 10px 12px; border-left: 2px solid var(--orange); background: #24221e; }
+.room-result strong { color: var(--orange); }

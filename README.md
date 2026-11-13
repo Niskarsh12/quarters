@@ -7,11 +7,11 @@ Tracks are Games With Real Economies (`games`), Memecoins With Mechanics (`memec
 ## Try the browser demo
 
 1. With Node.js 22, run `npm ci --omit=dev` and `npm run dev`. Open the printed URL. The practice lobby comes with five simulated entrants and Fast-forward enabled.
-2. Click **Enter** to join. Click **Hold position** and then **Advance round**. Moth flees and the remaining balances rise. The floor log shows the exact event and the interface rounds displayed balances down to four decimal places.
-3. Keep holding and advancing to settle. Try Reset and then **Flee** to preview and confirm the tax.
+2. Click **Enter** to join. Read the circuit clues, toggle the four switches, and click **Lock in**. See the correct answer and the result before continuing.
+3. In **The Empty Train**, read the habits of the other players, pick a train, and lock in. The reveal shows who boarded and which trains cleared. Finish the last circuit or choose **Flee** before locking in. **Play again** changes the circuit clues and can change how opponents board.
 4. Run `npm run test:arena` for the economic checks and `npm run build` for the production frontend.
 
-Practice mode uses the same integer accounting as the contract and runs independently in each browser. Simulated transactions use play balances. Fast-forward applies only to practice.
+Practice mode uses the same integer accounting as the contract and runs independently in each browser. Simulated transactions use play balances. Fast-forward starts practice immediately after entry. Playable puzzle rooms are in practice mode. The Testnet contract still runs the original Hold/Flee rounds.
 
 ## Game rules
 
@@ -26,7 +26,7 @@ On Linux, run `npm ci`, `npm run build:contract`, then deploy `build/paperhands_
 
 Copy `frontend/.env.example` to `frontend/.env.local` and set the deployed contract ID, FastAuth Testnet client ID, and FastAuth-compatible Testnet relayer base URL. Configure Auth0 to allow your app origin and email login. Restart or rebuild the frontend. **Play on Testnet** enables email login and derives the player's Testnet account. Copy the account ID and fund it with Testnet NEAR to cover the stake. Each game action uses a signed NEP-366 delegate action. The configured relayer pays transaction gas.
 
-For generated dilemmas, set `NEAR_AI_API_KEY` and `NEAR_AI_MODEL` to a route marked Private TEE in the NEAR AI model catalog. The server sends round context to NEAR AI Cloud and caches each response per UTC day and round for the running instance. It uses scripted dilemmas when the provider is unavailable. The model writes the fiction. The contract evaluates decisions and controls balances. This integration does not verify a per-response attestation in the browser.
+For generated dilemmas, set `NEAR_AI_API_KEY` and `NEAR_AI_MODEL` to a route marked Private TEE in the NEAR AI model catalog. The server sends round context to NEAR AI Cloud and caches each response per UTC day and round for the running instance. It uses scripted dilemmas when the provider is unavailable. The model generates structured circuit clues for practice and narration for the original Testnet rounds. A solver checks all 16 switch combinations and only accepts puzzles with one solution. The train room uses fixed scoring rules and simulated opponents. The contract handles the original Testnet rules and balances. This integration does not verify a per-response attestation in the browser.
 
 ## Code provenance
 
