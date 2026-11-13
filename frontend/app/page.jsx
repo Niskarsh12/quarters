@@ -1,5 +1,5 @@
-import { Workbench } from "../components/workbench";
+import Arena from "../components/arena";
 
-export default function Home() {
-  return <Workbench />;
+export default function Page() {
+  return <Arena />;
 }

@@ -1,20 +1,13 @@
 {
-  "name": "Quarters",
-  "description": "A pay-per-use AI workbench with a NEAR Coin Jar for mock-USDC purchases. Buy research or charts through an MCP and HTTP 402 payment flow, view receipts, and try a prompt-injection attack against the jar's spending policy. The browser includes an instant demo mode.",
-  "problem": "People who use premium AI tools occasionally still face recurring subscriptions. Agents need a way to pay for individual results while operating inside a user's spending policy.",
-  "links": {
-    "live": [],
-    "contracts": []
-  },
+  "name": "The PaperHands Arena",
+  "description": "A three-round browser survival game with AI-generated pressure broadcasts and a NEAR Testnet stake vault. Players who flee give up a portion of their balance, which goes directly to the players still inside.",
+  "problem": "Social survival games often give players no meaningful choice when they walk away. This arena makes each exit change the other players' positions through a fixed, verifiable redistribution rule.",
+  "links": { "live": [], "contracts": [] },
   "userFlow": [
-    "Run npm ci --omit=dev and npm run dev with Node.js 20 or later, then open the printed local URL. See Instant Demo Mode and a $5.00 Coin Jar.",
-    "Click the report and chart prompts. See both results, a $4.92 balance, and two clickable mock receipts.",
-    "Click Drop 1 Quarter. See the one-time grant raise the balance to $9.92.",
-    "Click Simulate Prompt Injection. See the simulated $10.00 drain blocked by the contract's per-call cap.",
-    "Run npm run test:security and npm run test:vending. See the attack harness pass and both MCP tools complete the HTTP 402 payment loop."
+    "Run npm ci --omit=dev and npm run dev with Node.js 22. Open the local URL to see the practice lobby.",
+    "With Fast-forward enabled, click Enter, Hold position, and Advance round. See a simulated player flee and the remaining balances rise.",
+    "Keep holding and advancing to settle, or reset and confirm Flee to see your refund and tax.",
+    "Run npm run test:arena to check conservation, round deadlines, and payout behavior."
   ],
-  "media": {
-    "videos": [],
-    "screenshots": []
-  }
+  "media": { "videos": [], "screenshots": [] }
 }

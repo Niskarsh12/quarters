@@ -1,33 +1,25 @@
 {
-  "name": "quarters",
+  "name": "paperhands-arena",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "workspaces": ["frontend"],
+  "workspaces": [
+    "frontend"
+  ],
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "dev": "npm run dev --workspace @quarters/frontend",
-    "build": "npm run build --workspace @quarters/frontend",
-    "start": "npm run start --workspace @quarters/frontend",
-    "build:contract": "near-sdk-js build contracts/vending_jar/src/contract.ts build/vending_jar.wasm",
-    "test:contract": "node --test contracts/vending_jar/test/contract.test.js",
-    "test:vending": "node --test services/vending_mcp/vending.test.js",
-    "test:security": "node --test scripts/attack_simulation.js",
-    "start:vending": "node services/vending_mcp/index.js"
+    "dev": "npm run dev --workspace @paperhands/frontend",
+    "build": "npm run build --workspace @paperhands/frontend",
+    "start": "npm run start --workspace @paperhands/frontend",
+    "build:contract": "near-sdk-js build contracts/paperhands_arena/src/contract.ts build/paperhands_arena.wasm",
+    "test:arena": "node --test scripts/arena.test.js"
   },
   "devDependencies": {
     "near-sdk-js": "2.0.0"
   },
   "overrides": {
     "@types/node": "18.19.0"
-  },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "1.32.2",
-    "@near-js/crypto": "2.5.1",
-    "@near-js/transactions": "2.5.1",
-    "bs58": "6.0.0",
-    "zod": "3.25.76"
   }
 }
