@@ -1,19 +1,14 @@
 {
-  "name": "The PaperHands Arena",
-  "description": "A three-round browser survival game. In practice, solve circuit puzzles that NEAR AI Cloud can generate, predict the crowd in a train game, or flee and give up part of your play stake. A NEAR Testnet vault implements the original Hold/Flee rules.",
-  "problem": "Social survival games often give players no meaningful choice when they walk away. This arena makes each exit change the other players' positions through a fixed, verifiable redistribution rule.",
-  "links": {
-    "live": [],
-    "contracts": []
-  },
+  "name": "Dungeon Stake: Kings & Knights",
+  "description": "A browser 5v5 team-voted chess raid. Heroes and enemies pick classes, ready up, discuss in private team chat and vote for legal moves. A server resolves each 60-second turn. Phase 1 uses mock stakes and payouts only; no blockchain integration is implemented.",
+  "problem": "Team strategy games often need demanding real-time controls. Dungeon Stake turns chess into a shared tactical conversation where five teammates each have one vote and a minute to agree.",
+  "links": { "live": [], "contracts": [] },
   "userFlow": [
-    "Run npm ci --omit=dev and npm run dev with Node.js 22. Open the local URL to see the practice lobby.",
-    "With Fast-forward enabled, click Enter. Solve the circuit clues, toggle switches, and lock in to reveal the answer.",
-    "Choose a train, reveal where the other players boarded, and continue to the final circuit. Flee before locking in to preview the tax.",
-    "Run npm run test:arena to check conservation, round deadlines, and payout behavior."
+    "Run npm ci and npm run dev, then open http://localhost:3000.",
+    "Pick a class and enter a name. Create a raid and share its code, or fill empty seats with labeled demo bots.",
+    "Press Ready. Once all ten seats are ready, watch the raid transition into a chess battle.",
+    "On your team turn, discuss and vote using SAN such as e4. The server plays the leading legal move at 60 seconds. Demo hosts can resolve early.",
+    "Checkmate or a team clock timeout ends the raid and settles pretend coins. Draws refund everyone. Run npm test to verify the engine."
   ],
-  "media": {
-    "videos": [],
-    "screenshots": []
-  }
+  "media": { "videos": [], "screenshots": [] }
 }

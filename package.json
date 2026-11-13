@@ -1,25 +1,29 @@
 {
-  "name": "paperhands-arena",
+  "name": "dungeon-stake",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "workspaces": [
-    "frontend"
-  ],
-  "engines": {
-    "node": ">=20"
-  },
   "scripts": {
-    "dev": "npm run dev --workspace @paperhands/frontend",
-    "build": "npm run build --workspace @paperhands/frontend",
-    "start": "npm run start --workspace @paperhands/frontend",
-    "build:contract": "near-sdk-js build contracts/paperhands_arena/src/contract.ts build/paperhands_arena.wasm",
-    "test:arena": "node --test scripts/arena.test.js"
+    "dev": "next dev -H 127.0.0.1",
+    "build": "next build",
+    "start": "next start -H 127.0.0.1",
+    "test": "node --test test/game.test.mjs",
+    "test:arena": "npm test",
+    "test:http": "node test/http.mjs"
+  },
+  "dependencies": {
+    "next": "14.2.35",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "chess.js": "1.4.0",
+    "react-chessboard": "4.7.3"
   },
   "devDependencies": {
-    "near-sdk-js": "2.0.0"
+    "tailwindcss": "3.4.17",
+    "postcss": "8.5.32",
+    "autoprefixer": "10.4.21"
   },
   "overrides": {
-    "@types/node": "18.19.0"
+    "postcss": "8.5.32"
   }
 }

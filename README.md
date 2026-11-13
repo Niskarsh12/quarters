@@ -1,33 +1,54 @@
-# The PaperHands Arena
+# Dungeon Stake: Kings & Knights
 
-A three-round survival game about deciding when to walk away. Players stake 0.1 Testnet NEAR. A Game Master sets the scene while the NEAR contract applies the same rules to every player.
+A browser-based 5v5 team chess raid. Five heroes storm a dungeon defended by five enemies. Each side discusses and votes for its next legal chess move. The server plays the most-voted move after 60 seconds.
 
-Tracks are Games With Real Economies (`games`), Memecoins With Mechanics (`memecoins`), and Open Innovation (`open`). The PaperHands Tax is a redistribution mechanic using native Testnet NEAR.
+## Run
 
-## Try the browser demo
+Requires Node.js 20.9+ and npm. Recommended: Node 22 or 24.
 
-1. With Node.js 22, run `npm ci --omit=dev` and `npm run dev`. Open the printed URL. The practice lobby comes with five simulated entrants and Fast-forward enabled.
-2. Click **Enter** to join. Read the circuit clues, toggle the four switches, and click **Lock in**. See the correct answer and the result before continuing.
-3. In **The Empty Train**, read the habits of the other players, pick a train, and lock in. The reveal shows who boarded and which trains cleared. Finish the last circuit or choose **Flee** before locking in. **Play again** changes the circuit clues and can change how opponents board.
-4. Run `npm run test:arena` for the economic checks and `npm run build` for the production frontend.
+```sh
+npm install
+npm run dev
+```
 
-Practice mode uses the same integer accounting as the contract and runs independently in each browser. Simulated transactions use play balances. Fast-forward starts practice immediately after entry. Playable puzzle rooms are in practice mode. The Testnet contract still runs the original Hold/Flee rounds.
+Open http://localhost:3000. Pick a class, enter a name, and create a raid. Share its six-character code with friends. Each browser tab has its own session; select an unoccupied class before joining. Five unique roles on each side make ten seats. Everyone presses Ready before the 2.5-second raid transition.
 
-## Game rules
+For a solo demonstration, choose **Fill empty seats with demo bots**, then **Ready**. Bots are explicitly labeled. The host can resolve a demo turn early. In a human room, there is no fast-forward. Use a different browser/profile or tab to test multiple players. The default server binds to localhost. For LAN or public access, first address the framework security advisory described below and deliberately configure the server hostname.
 
-- Each lobby seats at most twelve. It starts with two or more entrants and refunds a solo player. Any account can advance when the time window ends, or when the lobby is full.
-- Hold locks your decision for the current round. Flee immediately credits 75% of your current balance to you and divides the 25% tax among remaining players. Integer remainders go to survivors in entry order.
-- Missing a deadline costs 50% if at least one player held. The confirmed holders split that tax. If everybody misses, the contract returns remaining balances. If every active player holds, anyone can advance the round immediately.
-- The last survivor or the survivors at the end of round three can withdraw their full credited balances. Withdrawals use an on-chain transfer with a failure callback that restores the credit.
+## Rules
 
-## Build and run on NEAR Testnet
+- Heroes are white; enemies are black. All classes have equal voting power and no hidden chess abilities.
+- One replaceable vote per active teammate per turn. Submit standard algebraic notation, such as `e4`, `Nf3`, `O-O`, or `e8=Q`. chess.js validates moves; invalid votes are rejected.
+- At 60 seconds, the most-voted valid move executes. Tied leaders are randomly chosen using Node's cryptographic RNG. With no valid votes, the server randomly chooses a legal move.
+- Each team also has a ten-minute total clock, including its voting time. Running out loses the match. This distinguishes a turn deadline (automatic move) from a match timeout (loss).
+- Checkmate wins. Stalemate, repetition, insufficient material and other draws recognized by chess.js refund mock deposits.
+- Team chat and vote proposals are visible only to that team. Chat is writable during its turn.
+- Ready deposits **100 pretend coins**. Winners split the 1,000-coin mock pot: 200 each. Losing players receive zero. A draw returns 100 each. These coins have **no monetary value**. `depositStake()` and `slashLosers()` are local placeholder functions; no wallet, contract, NEAR transaction or real payout is connected.
 
-On Linux, run `npm ci`, `npm run build:contract`, then deploy `build/paperhands_arena.wasm` to a fresh Testnet account and call `init({})` with the contract account. On Windows, use the **Build PaperHands Arena** GitHub Actions workflow and download the WASM artifact. The initial lobby stays open for ten minutes. After an arena finishes or is cancelled, the contract account can call `open_arena` with `join_seconds` and `round_seconds` between 30 and 86400.
+## Checks
 
-Copy `frontend/.env.example` to `frontend/.env.local` and set the deployed contract ID, FastAuth Testnet client ID, and FastAuth-compatible Testnet relayer base URL. Configure Auth0 to allow your app origin and email login. Restart or rebuild the frontend. **Play on Testnet** enables email login and derives the player's Testnet account. Copy the account ID and fund it with Testnet NEAR to cover the stake. Each game action uses a signed NEP-366 delegate action. The configured relayer pays transaction gas.
+```sh
+npm test
+npm run build
+npm start
+```
 
-For generated dilemmas, set `NEAR_AI_API_KEY` and `NEAR_AI_MODEL` to a route marked Private TEE in the NEAR AI model catalog. The server sends round context to NEAR AI Cloud and caches each response per UTC day and round for the running instance. It uses scripted dilemmas when the provider is unavailable. The model generates structured circuit clues for practice and narration for the original Testnet rounds. A solver checks all 16 switch combinations and only accepts puzzles with one solution. The train room uses fixed scoring rules and simulated opponents. The contract handles the original Testnet rules and balances. This integration does not verify a per-response attestation in the browser.
+Tests cover lobby readiness, capacity through unique roles, legal voting, vote replacement, majority, ties, fallback, stale votes, checkmate, timeout, private snapshots and conserved/idempotent mock payouts.
 
-## Code provenance
+## Architecture and limits
 
-The repository was previously used for Quarters at [commit 1c0d972](https://github.com/Niskarsh12/quarters/commit/1c0d972). The arena replaces the Quarters product. The Next.js/Tailwind setup, dependency scaffolding, and WASM workflow pattern were reused. The arena key art was generated with OpenAI ImageGen.
+Next.js 14 App Router, React Context on the client, an authoritative Node server room store, chess.js 1.4 and react-chessboard 4.7.3. Browser snapshots poll every 700ms; a server interval advances deadlines independently. Refresh retains a seat in sessionStorage. Rooms are in memory and expire after two hours without access; a server restart loses them. Run **one long-lived Node process**, not horizontally scaled/serverless instances. No durable accounts, anti-sybil identity or reconnect seat reclamation is implemented. A seat left during a match remains until the match ends. Match clocks continue through disconnects.
+
+Dependency note: the requested Next.js 14 line has unresolved security advisories in `npm audit`, including a critical Windows-hosted server advisory. Keep this prototype local; upgrade to a supported patched Next.js release before public hosting. A successful build does not mean a clean security audit.
+
+## Art and third-party work
+
+Original static sprites authored with the `sprite` skill from [melodic-software/claude-code-plugins](https://github.com/melodic-software/claude-code-plugins/tree/main/plugins/pixel-art), adapting its Walker kit and using its **native** renderer. The requested `skills add ... --skill sprite` command failed to discover this nested skill; its runtime was installed manually. Character generators, spec files and review brief are in `public/assets/sprites/`. Each subdirectory has `sheet.png` at 1x, `sheet.json`, a larger review preview and a gallery. Ten characters plus grass and stone tiles. The app uses only the 1x sheet PNGs with CSS pixelated rendering. No generated high-resolution images are used as pixel art.
+
+Asset gallery: http://localhost:3000/assets/sprites/index.html. To regenerate, install the pixel-art plugin's scripts under `.claude/skills/sprite/scripts/`, then run `python public/assets/sprites/generate.py`.
+
+Libraries: Next.js, React, Tailwind CSS, chess.js and react-chessboard. AI-assisted implementation; original game-specific UI and server logic.
+
+## Hackathon scope
+
+This is a fresh pivot replacing the previous project in this repository during the hackathon. Git history is retained and `HACKATHON.md` is unchanged. Phase 1 intentionally has **no NEAR integration**; a real testnet economy is future work, not a completed feature. Submission metadata and public demo must be updated and confirmed before submission. This prototype should not be described as live Web3 staking.

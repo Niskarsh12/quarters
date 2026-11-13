@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+const base=process.env.TEST_URL||'http://localhost:3000';
+async function post(body,token,expected=200){const r=await fetch(base+'/api/room',{method:'POST',headers:{'Content-Type':'application/json',Origin:base,...(token?{Authorization:'Bearer '+token}:{})},body:JSON.stringify(body)});const data=await r.json();assert.equal(r.status,expected,JSON.stringify(data));return data;}
+let host=await post({action:'create',name:'Test Knight',side:'w',role:'knight'});
+let enemy=await post({action:'join',name:'Test Boss',side:'b',role:'boss',code:host.code});
+const ht=host.token,et=enemy.token,code=host.code;
+await post({action:'join',name:'Duplicate',side:'w',role:'knight',code},undefined,400);
+await post({action:'ready',code},'invalid',400);
+await post({action:'fill',code},et,400);
+host=await post({action:'fill',code},ht);assert.equal(host.players.length,10);
+host=await post({action:'ready',code},ht);assert.equal(host.phase,'lobby');
+enemy=await post({action:'ready',code},et);assert.equal(enemy.phase,'clash');
+await new Promise(r=>setTimeout(r,3000));
+host=await (await fetch(base+'/api/room?code='+code,{headers:{Authorization:'Bearer '+ht}})).json();assert.equal(host.phase,'battle');
+await post({action:'vote',code,move:'e4',turn:host.turn},et,400);
+await post({action:'vote',code,move:'Ke9',turn:host.turn},ht,400);
+host=await post({action:'vote',code,move:'e4',turn:host.turn},ht);assert.equal(host.myVote,'e4');
+await post({action:'chat',code,text:'Private center strategy'},ht);
+enemy=await (await fetch(base+'/api/room?code='+code,{headers:{Authorization:'Bearer '+et}})).json();assert.equal(enemy.chat.length,0);assert.deepEqual(enemy.votes,{});assert.ok(!JSON.stringify(enemy).includes(ht));
+host=await post({action:'advance',code},ht);assert.equal(host.active,'b');assert.equal(host.history.length,1);
+console.log('HTTP integration passed: independent seats, readiness, authorization, legal moves, private chat/votes, authoritative turn resolution.');

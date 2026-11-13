@@ -1,0 +1,47 @@
+{
+  "frames": {
+    "orc": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 32,
+        "h": 32
+      },
+      "sourceSize": {
+        "w": 32,
+        "h": 32
+      },
+      "duration": 125
+    }
+  },
+  "meta": {
+    "app": "pixel-art render.py",
+    "image": "sheet.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 32,
+      "h": 32
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "all",
+        "frames": [
+          "orc"
+        ],
+        "durations_ms": [
+          125
+        ],
+        "direction": "forward"
+      }
+    ]
+  }
+}

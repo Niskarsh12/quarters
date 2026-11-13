@@ -1,0 +1,47 @@
+{
+  "frames": {
+    "dark-stone-floor": {
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 16,
+        "h": 16
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 16,
+        "h": 16
+      },
+      "sourceSize": {
+        "w": 16,
+        "h": 16
+      },
+      "duration": 125
+    }
+  },
+  "meta": {
+    "app": "pixel-art render.py",
+    "image": "sheet.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 16,
+      "h": 16
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "all",
+        "frames": [
+          "dark-stone-floor"
+        ],
+        "durations_ms": [
+          125
+        ],
+        "direction": "forward"
+      }
+    ]
+  }
+}

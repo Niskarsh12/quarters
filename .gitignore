@@ -1,5 +1,7 @@
 node_modules/
-build/
 .next/
 .env*
 !.env.example
+.claude/
+.taste-skill/
+*.log
