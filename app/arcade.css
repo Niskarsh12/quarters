@@ -1,0 +1,195 @@
+.arcade-home {
+  max-width: 1440px;
+  --ticket: #f7dfb4;
+  --cabinet-ink: #211914;
+  --arcade-paper: #fff2da;
+  color: var(--arcade-paper);
+}
+
+body:has(.arcade-home) { background: #171321; }
+
+.arcade-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 77px;
+  font-weight: 700;
+}
+
+.arcade-wordmark { display: inline-flex; align-items: center; gap: 10px; }
+.arcade-token {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  aspect-ratio: 1;
+  border: 1px solid #eebb76;
+  border-radius: 50%;
+  color: #eebb76;
+}
+
+.arcade-nav > a:last-child { color: #f6ce91; }
+.arcade-nav > a:last-child span { margin-inline-start: 5px; }
+
+.arcade-hero, .game-marquee {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #23172c;
+}
+
+.arcade-hero {
+  display: flex;
+  align-items: center;
+  min-height: clamp(300px, 28vw, 390px);
+  border: 1px solid #765053;
+}
+
+.arcade-hero > img, .game-marquee > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 75% center;
+  z-index: -2;
+}
+
+.arcade-hero::before, .game-marquee::before {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background: linear-gradient(90deg, #180f20 1%, #180f20ee 23%, #180f2077 52%, #180f2000 83%);
+  z-index: -1;
+}
+
+.arcade-hero-copy { padding: 38px clamp(22px, 5.2vw, 76px); }
+.arcade-hero h1, .arcade-lineup h2, .arcade-cabinet h3, .game-marquee h1 {
+  font-family: 'Archivo Black', 'Arial Black', system-ui, sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -.055em;
+  line-height: .94;
+}
+
+.arcade-hero h1 { font-size: clamp(42px, 6.1vw, 92px); }
+.arcade-hero h1 em { font-style: normal; font-weight: inherit; color: #ffc679; }
+.arcade-hero p { margin-top: 22px; font-size: 17px; color: #f5dfc3; max-width: 350px; }
+.arcade-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 46px;
+  padding: 8px 14px;
+  background: var(--ticket);
+  color: var(--cabinet-ink);
+  font-size: 15px;
+  font-weight: 800;
+  transition: background .15s ease-out, transform .12s ease-out;
+}
+.arcade-cta:hover { background: #fff4dd; }
+.arcade-cta:active { transform: scale(.98); }
+.arcade-hero .arcade-cta { margin-top: 24px; }
+.arcade-lineup { margin-top: 34px; scroll-margin-top: 24px; }
+.arcade-lineup h2 { font-size: clamp(24px, 4vw, 42px); margin-bottom: 18px; }
+.arcade-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px; }
+.arcade-cabinet {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--cabinet-color);
+  color: var(--cabinet-ink);
+  padding: 6px;
+}
+.arcade-cover { display: block; overflow: hidden; aspect-ratio: 16 / 8.1; background: #2b2037; }
+.arcade-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.arcade-cabinet-copy { display: flex; flex: 1; flex-direction: column; align-items: flex-start; gap: 10px; padding: 16px 13px 13px; }
+.arcade-capacity { font-weight: 800; font-size: 13px; }
+.arcade-cabinet h3 { font-size: clamp(23px, 2.55vw, 35px); }
+.arcade-cabinet-copy p:not(.arcade-capacity) { font-size: 15px; }
+.arcade-cabinet .arcade-cta { margin-top: auto; width: 100%; background: #221a1e; color: #fff1d9; }
+.arcade-cabinet .arcade-cta:hover { background: #412b3d; }
+.arcade-cabinet :focus-visible { outline-color: #221a1e; }
+.arcade-footer { border-color: #47374a; color: #dec8b5; font-size: 13px; }
+
+.cabinet-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  padding: 22px 0;
+  border-bottom: 1px solid #444348;
+  color: #f0dfc0;
+}
+.cabinet-nav a { color: #c4b7a6; }
+.cabinet-nav a:hover { color: #ffd582; }
+
+.game-marquee {
+  min-height: clamp(205px, 25vw, 330px);
+  display: flex;
+  align-items: end;
+  border-bottom: 3px solid var(--cabinet-color);
+  margin: 20px 0 24px;
+  color: #fff1d9;
+}
+.game-marquee::before { background: linear-gradient(90deg, #180f20f5 4%, #180f20bd 30%, #180f2022 80%); }
+.game-marquee-copy { padding: clamp(18px, 4vw, 50px); }
+.game-marquee .arcade-capacity { color: var(--cabinet-color); margin-bottom: 8px; }
+.game-marquee h1 { font-size: clamp(33px, 6.5vw, 82px); }
+.game-marquee p:last-child { margin-top: 12px; max-width: 42ch; font-size: 16px; }
+.sports-picker-title { margin-bottom: 12px; }
+.sports-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr) minmax(0, 1.2fr);
+  align-items: end;
+  gap: 20px;
+  padding: 24px;
+  background: var(--panel);
+  margin-top: 16px;
+}
+.sports-entry p { margin: 4px 0 10px; color: var(--muted); }
+.sports-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.sports-entry .join-form { grid-column: auto; }
+.stake-select { margin-top: 12px; }
+.stake-select select {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 5px;
+  padding: 7px 10px;
+  color: var(--ink);
+  border: 1px solid #545a50;
+  background: #171c1b;
+}
+.stake-select small { display: block; margin-top: 5px; color: var(--muted); }
+.near-stake { margin: 16px 0; padding: 14px; border: 1px solid #565145; background: #211f25; }
+.near-stake p { margin: 4px 0 8px; }
+.near-stake a { color: #ffdc93; text-decoration: underline; }
+.near-address { overflow-wrap: anywhere; }
+
+@media (max-width: 900px) {
+  .sports-entry { grid-template-columns: 1fr 1.5fr; }
+  .sports-entry .join-form { grid-column: 2; }
+}
+@media (max-width: 760px) {
+  .arcade-grid { grid-template-columns: 1fr; }
+  .arcade-cabinet { display: grid; grid-template-columns: 1fr 1fr; }
+  .arcade-cover { aspect-ratio: auto; }
+  .arcade-cover img { height: 100%; }
+}
+@media (max-width: 580px) {
+  .arcade-nav { min-height: 62px; }
+  .arcade-nav > a:last-child { font-size: 13px; }
+  .arcade-hero { min-height: 385px; align-items: end; }
+  .arcade-hero > img { object-position: 82% 40%; }
+  .arcade-hero::before { background: linear-gradient(0deg, #180f20 6%, #180f20cc 39%, #180f2000 85%); }
+  .arcade-hero-copy { padding: 20px; }
+  .arcade-hero p { font-size: 15px; margin-top: 12px; }
+  .arcade-hero .arcade-cta { margin-top: 15px; }
+  .arcade-cabinet { display: flex; }
+  .arcade-cover { aspect-ratio: 16 / 8.5; }
+  .game-marquee::before { background: linear-gradient(0deg, #180f20 3%, #180f20aa 53%, #180f201a 100%); }
+  .sports-entry { grid-template-columns: 1fr; padding: 16px; }
+  .sports-entry .join-form { grid-column: auto; }
+}

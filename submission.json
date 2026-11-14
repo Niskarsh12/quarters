@@ -1,14 +1,19 @@
 {
-  "name": "Dungeon Stake: Kings & Knights",
-  "description": "A browser 5v5 team-voted chess raid. Heroes and enemies pick classes, ready up, discuss in private team chat and vote for legal moves. A server resolves each 60-second turn. Phase 1 uses mock stakes and payouts only; no blockchain integration is implemented.",
-  "problem": "Team strategy games often need demanding real-time controls. Dungeon Stake turns chess into a shared tactical conversation where five teammates each have one vote and a minute to agree.",
-  "links": { "live": [], "contracts": [] },
+  "name": "Dungeon Stake: Arcade",
+  "description": "Football, Ice Hockey, and 1v1 Dungeon Fighters with free play and optional NEAR Testnet escrow for friend rooms.",
+  "problem": "Friends can start a competitive match without assembling two full teams. CPU players fill empty sports seats while human winners can share a Testnet stake.",
+  "links": {
+    "live": [],
+    "contracts": []
+  },
   "userFlow": [
     "Run npm ci and npm run dev, then open http://localhost:3000.",
-    "Pick a class and enter a name. Create a raid and share its code, or fill empty seats with labeled demo bots.",
-    "Press Ready. Once all ten seats are ready, watch the raid transition into a chess battle.",
-    "On your team turn, discuss and vote using SAN such as e4. The server plays the leading legal move at 60 seconds. Demo hosts can resolve early.",
-    "Checkmate or a team clock timeout ends the raid and settles pretend coins. Draws refund everyone. Run npm test to verify the engine."
+    "Choose a game and a character. Create a room or join with an invite code.",
+    "For team games, invite friends and have the host balance the teams and fill the open seats with bots. Every human readies up.",
+    "Use a free room or configure the Testnet escrow using the README. In a staked room every human confirms the same deposit, and human winners can withdraw their split."
   ],
-  "media": { "videos": [], "screenshots": [] }
+  "media": {
+    "videos": [],
+    "screenshots": []
+  }
 }

@@ -1,54 +1,43 @@
-# Dungeon Stake: Kings & Knights
+# Dungeon Stake · Arcade
 
-A browser-based 5v5 team chess raid. Five heroes storm a dungeon defended by five enemies. Each side discusses and votes for its next legal chess move. The server plays the most-voted move after 60 seconds.
+Dungeon Stake is a top-down 5v5 browser arena. Five heroes play against five monsters in Football and Ice Hockey.
 
-## Run
+**Dungeon Fighters** is a separate 1v1 cabinet with six fighters. Open `/fighters`, pick a fighter, and select **Fight CPU** or create a room for a friend. Both players ready up before the first round and agree to an online rematch. The first to win two rounds takes the match. Each round runs for up to 60 seconds. Ties can extend the match to five rounds.
 
-Requires Node.js 20.9+ and npm. Recommended: Node 22 or 24.
+Use the arrow keys to move, jump, and block. Press Z for a light attack, X for a heavy attack, and C for a special when the meter has at least 35 points. WASD and touch controls also work. The cabinet uses original pixel sprites with six poses per fighter.
+
+## Play locally
 
 ```sh
-npm install
+npm ci
 npm run dev
 ```
 
-Open http://localhost:3000. Pick a class, enter a name, and create a raid. Share its six-character code with friends. Each browser tab has its own session; select an unoccupied class before joining. Five unique roles on each side make ten seats. Everyone presses Ready before the 2.5-second raid transition.
+Open http://localhost:3000. Pick Football, Ice Hockey, or Dungeon Fighters. Select **Free · 0 NEAR** to create a room without a wallet, then share the room code. Solo practice is free in every cabinet.
 
-For a solo demonstration, choose **Fill empty seats with demo bots**, then **Ready**. Bots are explicitly labeled. The host can resolve a demo turn early. In a human room, there is no fast-forward. Use a different browser/profile or tab to test multiple players. The default server binds to localhost. For LAN or public access, first address the framework security advisory described below and deliberately configure the server hostname.
+In Football and Ice Hockey, invite between one and nine friends. When everyone has joined, the host selects **Balance teams and fill with bots**. With four humans, the arena assigns two humans and three bots per side. Everyone still readies up individually. If a human leaves before kickoff, bots are cleared so a replacement can join.
 
-## Rules
+Move with WASD, arrow keys, or the touch direction pad. Space or the touch action button does the following in each mode.
 
-- Heroes are white; enemies are black. All classes have equal voting power and no hidden chess abilities.
-- One replaceable vote per active teammate per turn. Submit standard algebraic notation, such as `e4`, `Nf3`, `O-O`, or `e8=Q`. chess.js validates moves; invalid votes are rejected.
-- At 60 seconds, the most-voted valid move executes. Tied leaders are randomly chosen using Node's cryptographic RNG. With no valid votes, the server randomly chooses a legal move.
-- Each team also has a ten-minute total clock, including its voting time. Running out loses the match. This distinguishes a turn deadline (automatic move) from a match timeout (loss).
-- Checkmate wins. Stalemate, repetition, insufficient material and other draws recognized by chess.js refund mock deposits.
-- Team chat and vote proposals are visible only to that team. Chat is writable during its turn.
-- Ready deposits **100 pretend coins**. Winners split the 1,000-coin mock pot: 200 each. Losing players receive zero. A draw returns 100 each. These coins have **no monetary value**. `depositStake()` and `slashLosers()` are local placeholder functions; no wallet, contract, NEAR transaction or real payout is connected.
+- Football: kick the ball toward the opposing gate.
+- Ice Hockey: skate across the rink, bank the puck off the boards, and shoot.
 
-## Checks
+The first team to reach the mode target wins: 10 football goals or 7 hockey goals. If time runs out first, the higher score after three minutes wins. A tie goes to 30 seconds of sudden death. The next score wins, or the match ends in a draw if nobody scores.
 
-```sh
-npm test
-npm run build
-npm start
-```
+## NEAR Testnet demo
 
-Tests cover lobby readiness, capacity through unique roles, legal voting, vote replacement, majority, ties, fallback, stale votes, checkmate, timeout, private snapshots and conserved/idempotent mock payouts.
+1. Build the escrow on Linux with `cd contracts/arcade_escrow && npm ci && npm run build`, or run **Build arcade escrow** in GitHub Actions and extract `arcade_escrow.wasm` from its artifact.
+2. Deploy the WASM to a **fresh named Testnet contract account** using `npx near-cli-rs` → **contract** → **deploy** → **use-file**. Initialize it with `init`, JSON arguments `{"referee":"YOUR_REFEREE.testnet"}`, 100 Tgas, and 0 NEAR. The contract account signs the deployment. Keep the unrelated Vending Jar account separate.
+3. Create a dedicated signing key for the named referee Testnet account. Register its public key on that account with NEAR CLI under **account → add-key → grant-function-call-access**, restricting its receiver to the escrow contract and its methods to `settle`. Use a Testnet gas allowance adequate for the demo. Put the private part of this restricted key in `NEAR_REFEREE_KEY` in `.env.local`. Copy the remaining variables from `.env.example` and set the contract and referee account IDs. Restart the app. The server checks the deployed contract before enabling paid rooms.
+4. Create a friend room with **0.01**, **0.05**, or **0.1 NEAR** per human. Join from a second browser profile with a different Meteor Testnet account. In each lobby, select **Deposit or confirm with Meteor**, approve the stake, and ready up. Football and Hockey can fill the remaining seats with bots. Dungeon Fighters needs two humans for a staked duel.
+5. Finish the match. The server submits its result using the escrow-only referee key. Human winners split the pool. Draws return each stake. Select **Withdraw escrow balance** to transfer the Testnet NEAR to the wallet.
 
-## Architecture and limits
+Paid lobbies expire after 15 minutes. If a match never settles, the original wallet can reclaim its deposit 25 minutes after funding through **Testnet payouts and refunds**. The browser saves match and seat receipts before sending deposits. The same wallet can also call `refund({match_id, seat_id})` and `withdraw()` directly on the contract.
 
-Next.js 14 App Router, React Context on the client, an authoritative Node server room store, chess.js 1.4 and react-chessboard 4.7.3. Browser snapshots poll every 700ms; a server interval advances deadlines independently. Refresh retains a seat in sessionStorage. Rooms are in memory and expire after two hours without access; a server restart loses them. Run **one long-lived Node process**, not horizontally scaled/serverless instances. No durable accounts, anti-sybil identity or reconnect seat reclamation is implemented. A seat left during a match remains until the match ends. Match clocks continue through disconnects.
+## Implementation
 
-Dependency note: the requested Next.js 14 line has unresolved security advisories in `npm audit`, including a critical Windows-hosted server advisory. Keep this prototype local; upgrade to a supported patched Next.js release before public hosting. A successful build does not mean a clean security audit.
+The lobby and match API run in one long-lived Node process. The server owns gameplay and attests to results as the trusted Testnet referee. The contract verifies locked deposits, calculates payouts, and holds balances for withdrawal. Room state resets on restart, while funds and refund deadlines remain on-chain. The browser draws the arenas on Canvas 2D. Each tab has its own seat.
 
-## Art and third-party work
+The pitch and characters reuse the project's original native sprite sheets under `public/assets/sprites`.
 
-Original static sprites authored with the `sprite` skill from [melodic-software/claude-code-plugins](https://github.com/melodic-software/claude-code-plugins/tree/main/plugins/pixel-art), adapting its Walker kit and using its **native** renderer. The requested `skills add ... --skill sprite` command failed to discover this nested skill; its runtime was installed manually. Character generators, spec files and review brief are in `public/assets/sprites/`. Each subdirectory has `sheet.png` at 1x, `sheet.json`, a larger review preview and a gallery. Ten characters plus grass and stone tiles. The app uses only the 1x sheet PNGs with CSS pixelated rendering. No generated high-resolution images are used as pixel art.
-
-Asset gallery: http://localhost:3000/assets/sprites/index.html. To regenerate, install the pixel-art plugin's scripts under `.claude/skills/sprite/scripts/`, then run `python public/assets/sprites/generate.py`.
-
-Libraries: Next.js, React, Tailwind CSS, chess.js and react-chessboard. AI-assisted implementation; original game-specific UI and server logic.
-
-## Hackathon scope
-
-This is a fresh pivot replacing the previous project in this repository during the hackathon. Git history is retained and `HACKATHON.md` is unchanged. Phase 1 intentionally has **no NEAR integration**; a real testnet economy is future work, not a completed feature. Submission metadata and public demo must be updated and confirmed before submission. This prototype should not be described as live Web3 staking.
+Run `npm test` for match rules and `npm run test:http` with the local server running for shared room and movement checks.

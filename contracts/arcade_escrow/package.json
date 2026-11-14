@@ -1,0 +1,10 @@
+{
+  "name": "dungeon-stake-escrow",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "near-sdk-js build src/contract.ts build/arcade_escrow.wasm"
+  },
+  "dependencies": { "near-sdk-js": "2.0.0" },
+  "overrides": { "@types/node": "18.19.130" }
+}

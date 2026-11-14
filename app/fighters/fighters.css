@@ -1,0 +1,74 @@
+.fighters-page { max-width: 1240px; padding-bottom: 46px; }
+.select-stage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border: 1px solid #544855; background: #221926; }
+.fighter-focus { min-height: 450px; position: relative; display: flex; align-items: end; isolation: isolate; padding: 28px; background: #352331 url('/assets/fighters/forge.png') center / cover; image-rendering: pixelated; }
+.fighter-focus > .fighter-portrait { position: absolute; inset: 0; width: 100%; height: 100%; background-size: 600% auto; background-position: 0 42%; background-repeat: no-repeat; }
+.fighter-focus > div:last-child { position: relative; color: #fff2d2; background: #231721; border-left: 4px solid #ffbc54; padding: 10px 16px 12px; }
+.fighter-focus h2 { font-size: clamp(35px, 6vw, 77px); font-weight: 900; font-style: italic; text-transform: uppercase; letter-spacing: -.06em; line-height: .9; margin: 4px 0 8px; }
+.fighter-focus p { font-size: 14px; }
+.fighter-selection { padding: 26px; }
+.fighter-selection h2 { font-size: 19px; margin-bottom: 13px; }
+.roster-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.roster-grid button { min-width: 0; padding: 0 0 8px; background: #302539; border: 1px solid #645270; color: #fff2d2; overflow: hidden; }
+.roster-grid button[aria-pressed="true"] { background: #503041; border-color: #ffbc54; outline: 1px solid #ffbc54; color: #ffcf8b; }
+.fighter-portrait { width: 100%; aspect-ratio: 1.1; background-position: 0 23%; background-size: 600% auto; background-repeat: no-repeat; image-rendering: pixelated; }
+.cabinet-actions { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; margin-top: 18px; align-items: end; }
+.cabinet-actions label { font-size: 12px; color: #e7d4bc; }
+.cabinet-actions select { display: block; width: 100%; min-height: 40px; margin-top: 4px; background: #201b26; border: 1px solid #645270; color: #fff2d2; padding: 6px 9px; }
+.cabinet-actions form { display: flex; gap: 5px; min-width: 0; }
+.cabinet-actions form input { min-width: 0; width: 100%; }
+.fighters-page button { min-height: 40px; }
+.fighters-page .fighter-primary { background: #f5b44f; color: #24191b; border-color: #f5b44f; font-weight: 800; }
+.fighters-page .fighter-primary:hover { background: #ffd688; }
+.cabinet-error { padding: 12px; border-left: 3px solid #e67c82; color: #ffc6c3; margin-top: 12px; background: #382227; }
+.versus-room { padding: 35px 0; max-width: 620px; margin: auto; }
+.versus-room h1 { margin-bottom: 10px; }
+.room-code { font: 900 32px monospace; letter-spacing: .12em; color: #f5b44f; margin: 12px 0; }
+.versus-seats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.versus-seats > div { min-height: 120px; border: 1px solid #645270; padding: 12px; background: #302539; }
+.versus-seats .fighter-portrait { max-width: 120px; }
+.versus-seats small { margin-left: 9px; }
+.versus-room > button { margin-right: 8px; }
+.duel-toolbar { display: flex; justify-content: space-between; gap: 7px; align-items: center; padding: 13px 0; color: #e7d4bc; }
+.duel-toolbar button { font-size: 12px; padding: 5px 10px; }
+.fight-frame { position: relative; border: 2px solid #6e5549; background: #261b2a; overflow: hidden; }
+.fight-frame canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; }
+.fight-hud { position: absolute; inset: 3.5% 3% auto; display: grid; grid-template-columns: 1fr 12% 1fr; gap: 2%; color: #fff5d5; pointer-events: none; }
+.fight-health.side-0 { grid-column: 1; grid-row: 1; }
+.fight-health.side-1 { grid-column: 3; grid-row: 1; }
+.health-name,.fight-secondary { display: flex; justify-content: space-between; align-items: center; }
+.health-name strong { font-size: clamp(10px, 2.4vw, 29px); font-weight: 900; font-style: italic; text-transform: uppercase; paint-order: stroke; -webkit-text-stroke: 2px #21131d; }
+.health-name small { font-size: clamp(8px, 1.2vw, 12px); padding: 0 3px; background: #251a26; }
+.side-1 .health-name,.side-1 .fight-secondary { flex-direction: row-reverse; }
+.health-track { height: clamp(7px, 1.7vw, 19px); border: 2px solid #ffe4a1; background: #6b253d; display: flex; }
+.side-1 .health-track,.side-1 .meter-track { justify-content: end; }
+.health-track i { display: block; height: 100%; background: #b6e86c; }
+.fight-secondary { margin-top: 4px; }
+.round-pips { display: flex; gap: 4px; }
+.round-pips i { width: clamp(6px, 1vw, 12px); height: clamp(6px, 1vw, 12px); border: 1px solid #ffdd8c; background: #332639; }
+.round-pips i[data-won="true"] { background: #ffbc54; }
+.meter-track { display: flex; width: 43%; height: 5px; background: #241824; }
+.meter-track i { background: #67cbe4; }
+.fight-clock { grid-column: 2; grid-row: 1; text-align: center; background: #211522; border: 1px solid #c7864b; }
+.fight-clock strong { display: block; color: #ffc55b; font-size: clamp(14px, 4vw, 48px); font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+.fight-clock span { display: block; font-size: clamp(7px, 1.2vw, 12px); }
+.round-call, .duel-result { position: absolute; inset: 0; display: grid; align-content: center; justify-items: center; text-align: center; }
+.round-call { font-size: clamp(25px, 8vw, 92px); font-style: italic; font-weight: 900; text-transform: uppercase; color: #ffc55b; paint-order: stroke; -webkit-text-stroke: 5px #251522; pointer-events: none; }
+.duel-result { background: #1e1322e8; gap: 8px; }
+.duel-result h2 { font-size: clamp(24px, 6vw, 68px); text-transform: uppercase; font-style: italic; color: #ffbf60; line-height: 1; }
+.duel-result p { color: #f3d9b8; }
+.key-guide { color: #dbc6a9; padding: 13px 0; font-size: 12px; }
+.key-guide kbd,.fighter-focus kbd { border: 1px solid #946a57; padding: 1px 4px; }
+.fight-controls { display: none; }
+@media (pointer: coarse) {
+  .fight-controls,.fight-controls > div { display: flex; justify-content: space-between; gap: 5px; flex-wrap: wrap; }
+  .fight-controls { padding-top: 8px; touch-action: none; }
+  .fight-controls button { padding: 5px 8px; touch-action: none; }
+}
+@media (max-width: 680px) {
+  .select-stage { grid-template-columns: 1fr; }
+  .fighter-focus { min-height: 0; padding: 8px 12px 12px; flex-direction: column; align-items: center; }
+  .fighter-focus > .fighter-portrait { position: static; width: min(220px, 100%); height: auto; aspect-ratio: 1.2; background-position-y: 37%; }
+  .fighter-focus > div:last-child { width: 100%; }
+  .fighter-selection { padding: 13px; }
+  .cabinet-actions { grid-template-columns: 1fr; }
+}

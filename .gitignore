@@ -5,3 +5,4 @@ node_modules/
 .claude/
 .taste-skill/
 *.log
+contracts/arcade_escrow/build/

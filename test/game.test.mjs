@@ -1,14 +1,116 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {Chess} from 'chess.js';
-import {createRoom,join,ready,fillBots,vote,tick,resolveTurn,snapshot,sendChat,finish,CLASSES} from '../lib/game.mjs';
-function full(){const r=createRoom('TEST',0);for(const side of ['w','b'])for(const role of CLASSES[side])join(r,{name:role,side,role},0);for(const p of r.players)ready(r,p,0);tick(r,2500);return r;}
-test('ready before filling bots also starts the raid',()=>{const r=createRoom('B',0);const p=join(r,{name:'Ada',side:'w',role:'knight'},0);ready(r,p,0);fillBots(r,p,1000);assert.equal(r.phase,'clash');tick(r,3500);assert.equal(r.phase,'battle');});
-test('ten seats, unique roles, readiness and clash gate',()=>{const r=createRoom('A');const p=join(r,{name:'Ada',side:'w',role:'knight'});assert.throws(()=>join(r,{name:'Clone',side:'w',role:'knight'}));fillBots(r,p,0);assert.equal(r.players.length,10);assert.equal(r.phase,'lobby');ready(r,p,0);assert.equal(r.phase,'clash');tick(r,2499);assert.equal(r.phase,'clash');tick(r,2500);assert.equal(r.phase,'battle');assert.equal(r.deadline,62500);assert.equal(Object.values(r.ledger.deposits).reduce((a,b)=>a+b),1000);});
-test('valid votes, replacement, majority, side and stale turn rejection',()=>{const r=full();const [a,b,c]=r.players;vote(r,a,'e4',1,3000);vote(r,a,'d4',1,3100);vote(r,b,'d4',1,3200);vote(r,c,'e4',1,3300);assert.throws(()=>vote(r,a,'Ke9',1,3400));assert.throws(()=>vote(r,r.players[5],'e5',1,3400));assert.throws(()=>vote(r,a,'e4',0,3400));tick(r,62500);assert.equal(r.history[0].san,'d4');assert.equal(r.chess.turn(),'b');assert.equal(r.turn,2);assert.deepEqual(r.votes,{});assert.equal(r.banks.w,540000);});
-test('fallback ignores corrupt votes and selects only legal moves',()=>{const r=full();r.votes={intruder:'Qh9',[r.players[0].id]:'e99'};resolveTurn(r,62500,()=>0);assert.equal(r.history.length,1);assert.equal(r.history[0].method,'Random legal fallback');assert.equal(r.chess.history().length,1);});
-test('ties choose among the leaders only',()=>{const r=full();vote(r,r.players[0],'e4',1,3000);vote(r,r.players[1],'d4',1,3000);resolveTurn(r,4000,()=>1);assert.equal(r.history[0].san,'e4');});
-test('checkmate settles mock pot once and conserves coins',()=>{const r=full();r.chess=new Chess('7k/8/5KQ1/8/8/8/8/8 w - - 0 1');vote(r,r.players[0],'Qg7#',1,3000);resolveTurn(r,4000,()=>0);assert.equal(r.phase,'finished');assert.equal(r.winner,'w');assert.equal(Object.values(r.ledger.payouts).reduce((a,b)=>a+b),1000);assert.equal(r.ledger.payouts[r.players[0].id],200);const ledger=JSON.stringify(r.ledger);finish(r,'b','retry');assert.equal(JSON.stringify(r.ledger),ledger);});
-test('team bank timeout loses; ordinary turn expiration does not',()=>{const r=full();r.banks.w=1000;r.deadline=3500;tick(r,3500);assert.equal(r.phase,'finished');assert.equal(r.winner,'b');assert.equal(r.reason,'Team clock expired');});
-test('draw refunds everyone and chat/votes are private',()=>{const r=full();const p=r.players[0];sendChat(r,p,'Try the center',3000);vote(r,p,'e4',1,3000);const enemy=snapshot(r,r.players[5],4000);assert.equal(enemy.chat.length,0);assert.deepEqual(enemy.votes,{});assert.ok(enemy.players.every(p=>!p.token));assert.throws(()=>sendChat(r,r.players[5],'spy',4000));finish(r,null,'Draw');assert.ok(Object.values(r.ledger.payouts).every(v=>v===100));});
-test('deadline cannot accept a late white vote',()=>{const r=full();assert.throws(()=>vote(r,r.players[0],'e4',1,62500));assert.equal(r.history.length,1);});
+import { createRoom, join, ready, fillBots, tick, snapshot, setInput, MATCH_MS, EXTRA_MS } from '../lib/game.mjs';
+import { FIELD } from '../lib/football.mjs';
+import { MODES } from '../lib/modes.mjs';
+
+for (const [mode, rules] of Object.entries(MODES)) {
+  test(mode + ' ends immediately at its score target', () => {
+    const { room, start: time } = start(mode);
+    const { match } = room;
+    const hero = match.actors.find(actor => actor.side === 'w');
+    match.score.w = rules.target - 1;
+    const now = time + 2300;
+    match.ball.x = FIELD.right + 4;
+    match.ball.vx = 100;
+    assert.ok(now < room.deadline);
+    tick(room, now);
+    assert.equal(room.phase, 'finished');
+    assert.equal(room.winner, 'w');
+    assert.equal(match.score.w, rules.target);
+    assert.equal(room.ledger.payouts[hero.id], 200);
+  });
+}
+
+function start(mode = 'football') {
+  const room = createRoom('TEST', 0, mode);
+  const player = join(room, { name: 'Knight', side: 'w', role: 'knight' }, 0);
+  ready(room, player, 0);
+  fillBots(room, player, 0);
+  const start = room.deadline;
+  tick(room, start);
+  room.match.actors.forEach(actor => { actor.bot = false; });
+  return { room, player, start };
+}
+
+test('ten ready seats start a match and seat tokens stay private', () => {
+  const { room, player, start: time } = start();
+  const state = snapshot(room, player, time);
+  assert.equal(state.pitch.actors.length, 10);
+  assert.equal(state.deadline, time + MATCH_MS);
+  assert.ok(state.players.every(seat => !seat.token));
+});
+
+test('four humans on the same side are split two each when the host fills six bot seats', () => {
+  const room = createRoom('MIXED', 0, 'hockey');
+  const humans = ['knight','archer','mage','barbarian'].map(role=>join(room,{name:role,side:'w',role},0));
+  assert.throws(()=>fillBots(room,humans[1],0),/host/);
+  fillBots(room,humans[0],0);
+  assert.equal(room.players.filter(player=>player.bot).length,6);
+  assert.equal(humans.filter(player=>player.side==='w').length,2);
+  assert.equal(humans.filter(player=>player.side==='b').length,2);
+  assert.equal(new Set(room.players.map(player=>player.role)).size,10);
+  assert.equal(room.phase,'lobby');
+  humans.forEach(player=>ready(room,player,0));
+  assert.equal(room.phase,'clash');
+});
+
+test('hockey preserves puck momentum and rebounds off the boards', () => {
+  const { room, start: time } = start('hockey');
+  const ball = room.match.ball;
+  ball.y = FIELD.top + 6;
+  ball.vy = -200;
+  tick(room, time + 1160);
+  assert.ok(ball.vy > 160);
+  assert.equal(room.match.mode, 'hockey');
+});
+
+test('movement is normalized and expires if input stops', () => {
+  const { room, player, start: time } = start();
+  const now = time + 1200;
+  const actor = room.match.actors[0];
+  setInput(room, player, { x: 1, y: 1, kick: false }, now);
+  tick(room, now + 100);
+  assert.ok(actor.x > 100 && actor.y > 180);
+  assert.ok(Math.abs(actor.dx - Math.SQRT1_2) < 0.001);
+  tick(room, now + 400);
+  assert.equal(actor.dx, 0);
+  assert.throws(() => setInput(room, player, { x: 2, y: 0, kick: false }, now), /Invalid/);
+});
+
+test('a kick through the goal scores once, resets the pitch and pays five winners at full time', () => {
+  const { room, player, start: time } = start();
+  const actor = room.match.actors[0];
+  actor.x = FIELD.right - 16;
+  actor.y = 180;
+  room.match.ball.x = FIELD.right - 3;
+  setInput(room, player, { x: 0, y: 0, kick: true }, time + 1200);
+  tick(room, time + 1270);
+  assert.deepEqual(room.match.score, { w: 1, b: 0 });
+  assert.equal(room.match.ball.x, 320);
+  tick(room, room.deadline);
+  assert.equal(room.winner, 'w');
+  assert.deepEqual(Object.values(room.ledger.payouts), Array(5).fill(200));
+});
+
+test('a tied match enters golden goal and the next goal wins immediately', () => {
+  const { room } = start();
+  const regulationEnd = room.deadline;
+  tick(room, regulationEnd);
+  assert.ok(room.match.overtime);
+  assert.equal(room.deadline, regulationEnd + EXTRA_MS);
+  room.match.ball.x = FIELD.left - 4;
+  room.match.ball.vx = -100;
+  tick(room, regulationEnd + 1200);
+  assert.equal(room.winner, 'b');
+  assert.equal(room.reason, 'Golden goal');
+});
+
+test('goalless overtime refunds each entry', () => {
+  const { room } = start();
+  tick(room, room.deadline);
+  tick(room, room.deadline);
+  assert.equal(room.phase, 'finished');
+  assert.equal(room.winner, null);
+  assert.deepEqual(Object.values(room.ledger.payouts), Array(10).fill(100));
+});
